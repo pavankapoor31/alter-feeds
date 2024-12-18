@@ -1,0 +1,11 @@
+.share-button{
+    background-color: rgba(0, 0, 0, 0.07) !important; /* Set background color */
+    border: none !important; /* Optional: Remove the default border */
+    color: black !important; /* Adjust text color if needed */
+    color: black;
+    border-radius: 4rem !important;
+}
+
+.share-button:hover {
+    background-color: rgba(0, 0, 0, 0.1); /* Optional: Darken on hover */
+}
