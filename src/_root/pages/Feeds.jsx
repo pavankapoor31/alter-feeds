@@ -7,7 +7,7 @@ import { Container, Spinner } from "react-bootstrap";
 import { AuthContext } from "../../components/AppContext/AppContext";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../_auth/firebaseConfig";
-import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs } from "firebase/firestore";
+import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, doc, deleteDoc, arrayUnion, updateDoc } from "firebase/firestore";
 
 const Feeds = () => {
   const { user, userData } = useContext(AuthContext);
@@ -37,6 +37,7 @@ const Feeds = () => {
     return () => unsubscribe();
   }, []);
 
+
   const fetchMorePosts = async () => {
     if (!lastDoc) return;
 
@@ -63,6 +64,36 @@ const Feeds = () => {
     }
   };
 
+  const deletePost = async (id) => {
+    try {
+      const postDoc = doc(db, "posts", id);
+      await deleteDoc(postDoc);
+      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
+    } catch (err) {
+      console.error("Error deleting post:", err);
+    }
+  };
+  const likePost = async (id, userId) => {
+    try {
+      const postDoc = doc(db, "posts", id);
+      const post = posts.find((post) => post.id === id);
+      const likes = post.likes.includes(userId)
+        ? post.likes.filter((id) => id !== userId)
+        : [...post.likes, userId];
+      await updateDoc(postDoc, {
+        likes,
+      });
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === id ? { ...post, likes } : post
+        )
+      );
+    } catch (err) {
+      console.error("Error liking post:", err);
+    }
+  };
+
+
   return (
     <Container>
       <WelcomeHeader username={userData?.name} image={userData?.image} />
@@ -86,7 +117,7 @@ const Feeds = () => {
         }
       >
         {posts.map((post) => (
-          <FeedCard key={post.id} {...post} />
+          <FeedCard key={post.id} {...post} deletePost={deletePost} likePost={likePost}/>
         ))}
       </InfiniteScroll>
     </Container>

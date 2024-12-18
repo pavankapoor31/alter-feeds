@@ -10,7 +10,7 @@ const WelcomeHeader = ({ username, image }) => {
                         src={image}
                         alt="Profile Pic"
                         className="rounded-circle"
-                        style={{maxWidth:'4rem',maxHeight:'4rem'}}
+                        style={{maxWidth:'3.5rem',maxHeight:'3.5rem'}}
                     />
                 </div>
                 <div>

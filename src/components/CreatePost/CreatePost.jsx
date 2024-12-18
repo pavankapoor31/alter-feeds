@@ -2,17 +2,17 @@ import React, { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Camera } from "react-camera-pro";
 import { toast } from "react-toastify";
-import { FaImage, FaVideo, FaCamera } from "react-icons/fa"; // Import Icons\
+import { FaImage, FaVideo, FaCamera, FaTrash, FaTrashAlt } from "react-icons/fa"; // Import Icons\
 import Slider from "react-slick"; // Image Slider
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./CreatePost.css"
-import { db } from "../../_auth/firebaseConfig"
+import { db ,storage} from "../../_auth/firebaseConfig"
 import { Button } from "react-bootstrap";
 import { collection, addDoc } from "firebase/firestore"; // Firestore methods
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase storage
 import { AuthContext } from "../AppContext/AppContext";
-
+import {v4} from 'uuid'
 const CreatePost = () => {
     const camera = useRef(null);
     const [caption, setCaption] = useState("");
@@ -68,11 +68,10 @@ const CreatePost = () => {
         setShowCamera(false);
     };
 
+    const postCollectionRef = collection(db, "posts");
     const createPost = async (postData) => {
-        const postCollectionRef = collection(db, "posts");
         try {
             const newPost = await addDoc(postCollectionRef, postData);
-            console.log("Post created successfully:", newPost.id);
             return newPost.id;
         } catch (err) {
             console.error("Error posting the post:", err);
@@ -86,21 +85,19 @@ const CreatePost = () => {
             return;
         }
 
-        const storage = getStorage(); // Initialize Firebase storage
         try {
             const files = [];
             const fileURLs = [];
 
             // Upload images to Firebase storage
             if (images.length > 0) {
-                for (const image of images) {
-                    const blob = await fetch(image).then((res) => res.blob());
-                    const file = new File([blob], `image-${Date.now()}.jpeg`, { type: "image/jpeg" });
+                for (const image of photos) {
+                    // const blob = await fetch(image).then((res) => res.blob());
+                    const file = image;
                     files.push(file);
-
                     // Upload to storage
-                    const storageRef = ref(storage, `posts/${file.name}`);
-                    await uploadBytes(storageRef, file);
+                    const storageRef = ref(storage, `files/${v4()}/${file.name}`);
+                    let res =  await uploadBytes(storageRef, file);
                     const downloadURL = await getDownloadURL(storageRef);
                     fileURLs.push(downloadURL);
                 }
@@ -108,14 +105,13 @@ const CreatePost = () => {
 
             // Upload video to Firebase storage
             if (video) {
-                const videoBlob = await fetch(video).then((res) => res.blob());
-                const videoFile = new File([videoBlob], `video-${Date.now()}.mp4`, { type: "video/mp4" });
-                files.push(videoFile);
-
-                const videoRef = ref(storage, `posts/${videoFile.name}`);
-                await uploadBytes(videoRef, videoFile);
-                const videoURL = await getDownloadURL(videoRef);
-                fileURLs.push(videoURL);
+                const file = video;
+                files.push(file);
+                // Upload to storage
+                const storageRef = ref(storage, `files/${v4()}/${file.name}`);
+                let res =  await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(storageRef);
+                fileURLs.push(downloadURL);
             }
 
             // Upload camera capture to Firebase storage
@@ -129,7 +125,6 @@ const CreatePost = () => {
                 fileURLs.push(captureURL);
             }
 
-            // Prepare post data
             const postData = {
                 creator: {
                     id: userData.uid,
@@ -142,7 +137,6 @@ const CreatePost = () => {
                 createdOn: new Date().toISOString(),
                 likes: 0,
             };
-            console.log(postData,'postData')
             // Save post data to Firestore
             const postId = await createPost(postData);
 
@@ -171,11 +165,13 @@ const CreatePost = () => {
                             {photos.map((photo, index) => (
                                 <div key={index} className="slide">
                                     <img src={URL.createObjectURL(photo)} alt={`uploaded-${index}`} style={{ maxWidth: 'calc(100% - 20px)', maxHeight: '50vh' }} />
-                                    <div style={{ position: "absolute", top: "0px", "right": "0px" }}>
+                                    <div style={{ position: "absolute", bottom: "0px", "right": "0px" }}>
                                         <Button onClick={() => {
                                             setPhotos(photos.filter((_, i) => i !== index));
                                         }} className="bg-transparent text-black border-0"
-                                            role="button">X</Button>
+                                            role="button">
+                                                <FaTrashAlt/>
+                                            </Button>
                                     </div>
                                 </div>
                             ))}
@@ -198,8 +194,8 @@ const CreatePost = () => {
 
             {/* Video Preview */}
             {video && (
-                <div className="preview-video">
-                    <video controls>
+                <div className="preview-video overflow-hidden w-100">
+                    <video controls className="w-100" style={{ objectFit: "cover" }}>
                         <source src={URL.createObjectURL(video)} type="video/mp4" />
                     </video>
                 </div>

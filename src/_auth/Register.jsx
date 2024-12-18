@@ -3,14 +3,16 @@ import Button from 'react-bootstrap/Button';
 import { FaGoogle } from "react-icons/fa";
 import { AuthContext } from '../components/AppContext/AppContext';
 import googleIcon from "./../assets/images/google_icon.svg";
+import { useNavigate } from 'react-router-dom';
 
-  const Register = () => {
-    const {signInWithGoogle} = useContext(AuthContext);
-  const sign_up = async ()=>{
+const Register = () => {
+  const { signInWithGoogle } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const sign_up = async () => {
     await signInWithGoogle();
-    Navigate('/home')
+    navigate('/home')
   }
-    
+
   return (
     <section className="container-fluid d-flex align-items-end justify-content-center vh-100 position-relative">
       <img
@@ -27,7 +29,7 @@ import googleIcon from "./../assets/images/google_icon.svg";
           </div>
           <p className="text-center">Moments That Matter, Shared Forever.</p>
           <Button onClick={sign_up} className="bg-dark text-white d-flex align-items-center gap-2 karla-font-600 border-radius-25">
-            <img src={googleIcon}/>
+            <img src={googleIcon} />
             Continue with Google
           </Button>
           {/* <Button onClick={logoutUser} className="btn btn-dark">

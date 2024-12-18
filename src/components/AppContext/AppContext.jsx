@@ -6,7 +6,6 @@ import { addDoc, collection, getDocs, onSnapshot, query, where } from 'firebase/
 import { useNavigate } from 'react-router-dom';
 export const AuthContext = createContext();
 const AppContext = ({ children }) => {
-    console.log(children,'children')
     const navigate = useNavigate();
     const collectionUsersRef = collection(db, "users");
     const provider = new GoogleAuthProvider();
@@ -32,7 +31,7 @@ const AppContext = ({ children }) => {
             }
         }
         catch (err) {
-            console.log(err, "Error in login")
+            console.error(err, "Error in login")
         }
 
     }
@@ -48,7 +47,7 @@ const AppContext = ({ children }) => {
                     setUserData(doc.docs[0]?.data())
                 });
                 setUser(user)
-                navigate('/home')
+                // navigate('/home')
             }
             else {
                 setUser(null);

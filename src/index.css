@@ -37,8 +37,11 @@ body,html{
   .border-radius-25{
     border-radius: 3rem !important;
   }
-  .border-radius-3{
+  .border-radius-2{
     border-radius: 2rem !important;
+  }
+  .border-radius-1{
+    border-radius: 1rem !important;
   }
   .child-container {
     width: 100%;

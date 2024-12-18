@@ -7,6 +7,7 @@ import "./index.css";
 import { useState } from "react";
 import AppContext from "./components/AppContext/AppContext";
 import CreatePost from "./components/CreatePost/CreatePost";
+import ViewPost from "./components/ViewPost/ViewPost";
 function App() {
     return (
         <main className="main-container" >
@@ -18,6 +19,7 @@ function App() {
                             <Route path="/" element={<Navigate to="/home" />} />
                             <Route path="/register" element={<Register />} />
                             <Route path="/home" element={<Home />} />
+                            <Route path="/feeds/:id" element={<ViewPost />} />
                             <Route path="/create-post" element={<CreatePost />} />
                     </Routes>
                         </div>

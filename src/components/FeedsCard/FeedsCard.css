@@ -1,0 +1,15 @@
+.hover-card {
+    position: relative;
+}
+
+.hover-card .delete-icon {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    cursor: pointer;
+}
+
+.hover-card:hover .delete-icon {
+    opacity: 1;
+    visibility: visible;
+}
