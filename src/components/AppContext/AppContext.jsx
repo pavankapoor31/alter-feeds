@@ -4,6 +4,7 @@ import { auth, db } from '../../_auth/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { addDoc, collection, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
+import { firebaseConfig } from '../../config/config';
 export const AuthContext = createContext();
 const AppContext = ({ children }) => {
     const navigate = useNavigate();
@@ -31,7 +32,7 @@ const AppContext = ({ children }) => {
             }
         }
         catch (err) {
-            console.error(err, "Error in login")
+            console.error(err, "Error in login",firebaseConfig)
         }
 
     }

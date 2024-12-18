@@ -57,7 +57,7 @@ const FeedCard = ({ creator, createdOn, caption, tags, files, likes, type, id, d
                             <small className="text-muted">{timeAgo(createdOn)}</small>
                         </div>
                     </div>
-                    {userData.uid === creator.id && <div className="delete-icon">
+                    {userData?.uid === creator?.id && <div className="delete-icon">
                         <FaTrashAlt
                             onClick={() => deletePost(id)}
                             className="text-danger cursor-pointer"

@@ -6,6 +6,7 @@ import Home from '../_root/pages/Home';
 import ViewPost from '../components/ViewPost/ViewPost';
 import CreatePost from '../components/CreatePost/CreatePost';
 import { AuthContext } from '../components/AppContext/AppContext';
+import RootLayout from '../_root/RootLayout';
 
 const AppRoutes = () => {
     const { user } = useContext(AuthContext);
@@ -23,15 +24,21 @@ const AppRoutes = () => {
 
     const loggedIn = !!user;
 
+    if(!loading && !loggedIn) {
+        
+    }
+
     return (
         <>
             <Routes>
                 <Route path="*" element={<ErrorPage />} />
                 <Route path="/" element={<Navigate to={loggedIn ? '/home' : '/register'} />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/home" element={<Home />} />
-                <Route path="/feeds/:id" element={<ViewPost />} />
-                <Route path="/create-post" element={<CreatePost />} />
+                <Route element={<RootLayout />}>
+                    <Route path="/home" element={<Home />} />
+                    <Route path="/feeds/:id" element={<ViewPost />} />
+                    <Route path="/create-post" element={<CreatePost />} />
+                </Route>
             </Routes>
         </>
     );
