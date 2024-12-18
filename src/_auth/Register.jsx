@@ -4,7 +4,8 @@ import { FaGoogle } from "react-icons/fa";
 import { AuthContext } from '../components/AppContext/AppContext';
 import googleIcon from "./../assets/images/google_icon.svg";
 import { useNavigate } from 'react-router-dom';
-
+import signUpSvg from "../assets/images/sign_up.svg"
+import logoSvg from "../assets/images/logo.svg"
 const Register = () => {
   const { signInWithGoogle } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const Register = () => {
   return (
     <section className="container-fluid d-flex align-items-end justify-content-center vh-100 position-relative">
       <img
-        src="src/assets/images/sign_up.svg"
+        src={signUpSvg}
         alt="Background"
         className="position-absolute w-100 h-100 img-fluid p-md-0"
         style={{ objectFit: 'cover', zIndex: 0 }}
@@ -24,7 +25,7 @@ const Register = () => {
       <div className="position-relative w-100 d-flex align-items-end justify-content-center" style={{ zIndex: 10 }}>
         <div className="bg-white w-100 gap-3 d-flex flex-column align-items-center justify-content-center  custom-rounded-top" style={{ maxWidth: '600px', padding: '2rem 1rem' }}>
           <div className="d-flex gap-2 align-items-center">
-            <img src="src/assets/images/logo.svg" alt="logo" width={50} height={50} />
+            <img src={logoSvg} alt="logo" width={50} height={50} />
             <h1 className="fs-4 mb-0">Vibesnap</h1>
           </div>
           <p className="text-center">Moments That Matter, Shared Forever.</p>
