@@ -13,6 +13,7 @@ import { collection, addDoc } from "firebase/firestore"; // Firestore methods
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase storage
 import { AuthContext } from "../AppContext/AppContext";
 import {v4} from 'uuid'
+import { toastConfig } from "../../config/config";
 const CreatePost = () => {
     const camera = useRef(null);
     const [caption, setCaption] = useState("");
@@ -40,7 +41,7 @@ const CreatePost = () => {
 
     const handlePhotoUpload = (e) => {
         if (video) {
-            toast({ title: "Error", description: "Cannot upload photos with a video.", variant: "danger" });
+            toast.error("Cannot upload photos with a video.",toastConfig);
             return;
         }
         if (e.target.files) setPhotos((prev) => {
@@ -51,7 +52,7 @@ const CreatePost = () => {
 
     const handleVideoUpload = (e) => {
         if (photos.length > 0 || capturedImage) {
-            toast({ title: "Error", description: "Cannot upload video with photos.", variant: "danger" });
+            toast.error("Cannot upload video with photos",toastConfig);
             return;
         }
         if (e.target.files) setVideo(e.target.files[0]);
@@ -59,7 +60,7 @@ const CreatePost = () => {
 
     const handleCameraCapture = () => {
         if (video) {
-            toast({ title: "Error", description: "Cannot use camera with a video.", variant: "danger" });
+            toast.error("Cannot use camera with a video",toastConfig);
             return;
         }
 
@@ -81,7 +82,7 @@ const CreatePost = () => {
 
     const handleSubmit = async () => {
         if (!caption && images.length === 0 && !video && !capturedImage) {
-            toast({ title: "Error", description: "Add content to post.", variant: "danger" });
+            toast.error( "Add content to post.",toastConfig)
             return;
         }
 
@@ -141,10 +142,11 @@ const CreatePost = () => {
             const postId = await createPost(postData);
 
             // Navigate to home or desired page
+            toast.success("🎉 Posted successfully!",toastConfig)
             navigate(`/`);
         } catch (err) {
             console.error("Error posting the post:", err);
-            toast({ title: "Error", description: "Failed to post. Please try again.", variant: "danger" });
+            toast.error( "Failed to post. Please try again.",toastConfig)
         }
     };
 

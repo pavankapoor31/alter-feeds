@@ -8,6 +8,7 @@ import CreatePost from '../components/CreatePost/CreatePost';
 import { AuthContext } from '../components/AppContext/AppContext';
 import RootLayout from '../_root/RootLayout';
 import ProfilePage from '../_root/pages/ProfilePage';
+import { ToastContainer } from 'react-toastify';
 
 const AppRoutes = () => {
     const { user } = useContext(AuthContext);
@@ -25,8 +26,8 @@ const AppRoutes = () => {
 
     const loggedIn = !!user;
 
-    if(!loading && !loggedIn) {
-        
+    if (!loading && !loggedIn) {
+
     }
 
     return (
@@ -42,6 +43,17 @@ const AppRoutes = () => {
                     <Route path="/profile" element={<ProfilePage />} />
                 </Route>
             </Routes>
+            <ToastContainer
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </>
     );
 };
