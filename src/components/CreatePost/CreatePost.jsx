@@ -7,12 +7,12 @@ import Slider from "react-slick"; // Image Slider
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./CreatePost.css"
-import { db ,storage} from "../../_auth/firebaseConfig"
+import { db, storage } from "../../_auth/firebaseConfig"
 import { Button } from "react-bootstrap";
 import { collection, addDoc } from "firebase/firestore"; // Firestore methods
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase storage
 import { AuthContext } from "../AppContext/AppContext";
-import {v4} from 'uuid'
+import { v4 } from 'uuid'
 import { toastConfig } from "../../config/config";
 const CreatePost = () => {
     const camera = useRef(null);
@@ -23,7 +23,7 @@ const CreatePost = () => {
     const [capturedImage, setCapturedImage] = useState(null);
     const [images, setImages] = useState([]);
     const navigate = useNavigate();
-    const {user,userData}= useContext(AuthContext);
+    const { user, userData } = useContext(AuthContext);
     const sliderSettings = {
         dots: true,
         infinite: true,
@@ -41,7 +41,7 @@ const CreatePost = () => {
 
     const handlePhotoUpload = (e) => {
         if (video) {
-            toast.error("Cannot upload photos with a video.",toastConfig);
+            toast.error("Cannot upload photos with a video.", toastConfig);
             return;
         }
         if (e.target.files) setPhotos((prev) => {
@@ -52,7 +52,7 @@ const CreatePost = () => {
 
     const handleVideoUpload = (e) => {
         if (photos.length > 0 || capturedImage) {
-            toast.error("Cannot upload video with photos",toastConfig);
+            toast.error("Cannot upload video with photos", toastConfig);
             return;
         }
         if (e.target.files) setVideo(e.target.files[0]);
@@ -60,7 +60,7 @@ const CreatePost = () => {
 
     const handleCameraCapture = () => {
         if (video) {
-            toast.error("Cannot use camera with a video",toastConfig);
+            toast.error("Cannot use camera with a video", toastConfig);
             return;
         }
 
@@ -82,7 +82,7 @@ const CreatePost = () => {
 
     const handleSubmit = async () => {
         if (!caption && images.length === 0 && !video && !capturedImage) {
-            toast.error( "Add content to post.",toastConfig)
+            toast.error("Add content to post.", toastConfig)
             return;
         }
 
@@ -98,7 +98,7 @@ const CreatePost = () => {
                     files.push(file);
                     // Upload to storage
                     const storageRef = ref(storage, `files/${v4()}/${file.name}`);
-                    let res =  await uploadBytes(storageRef, file);
+                    let res = await uploadBytes(storageRef, file);
                     const downloadURL = await getDownloadURL(storageRef);
                     fileURLs.push(downloadURL);
                 }
@@ -110,7 +110,7 @@ const CreatePost = () => {
                 files.push(file);
                 // Upload to storage
                 const storageRef = ref(storage, `files/${v4()}/${file.name}`);
-                let res =  await uploadBytes(storageRef, file);
+                let res = await uploadBytes(storageRef, file);
                 const downloadURL = await getDownloadURL(storageRef);
                 fileURLs.push(downloadURL);
             }
@@ -142,15 +142,15 @@ const CreatePost = () => {
             const postId = await createPost(postData);
 
             // Navigate to home or desired page
-            toast.success("🎉 Posted successfully!",toastConfig)
+            toast.success("🎉 Posted successfully!", toastConfig)
             navigate(`/`);
         } catch (err) {
             console.error("Error posting the post:", err);
-            toast.error( "Failed to post. Please try again.",toastConfig)
+            toast.error("Failed to post. Please try again.", toastConfig)
         }
     };
 
-    const navigateHome = ()=>{
+    const navigateHome = () => {
         navigate("/home")
     }
     return (
@@ -172,8 +172,8 @@ const CreatePost = () => {
                                             setPhotos(photos.filter((_, i) => i !== index));
                                         }} className="bg-transparent text-black border-0"
                                             role="button">
-                                                <FaTrashAlt/>
-                                            </Button>
+                                            <FaTrashAlt />
+                                        </Button>
                                     </div>
                                 </div>
                             ))}
@@ -215,18 +215,17 @@ const CreatePost = () => {
             {/* Buttons for Photos, Video, and Camera */}
             {!video && !photos.length && <div className="media-options">
                 <label>
-                    <FaImage className="icon" style={{ color: "green" }} />
+                    <div> <FaImage className="icon mx-1" style={{ color: "green" }} />  <span>{photos.length ? "Add more photos" : "Photos"}</span></div>
                     <input type="file" accept="image/*" multiple hidden onChange={handlePhotoUpload} disabled={!!video} />
-                    <span>{photos.length ? "Add more photos" : "Photos"}</span>
+
                 </label>
                 <><label>
-                    <FaVideo className="icon" style={{ color: "red" }} />
+                    <div><FaVideo className="icon mx-1" style={{ color: "red" }} />  <span>Video</span></div>
                     <input type="file" accept="video/*" hidden onChange={handleVideoUpload} disabled={photos.length > 0 || capturedImage} />
-                    <span>Video</span>
+
                 </label>
-                    <button onClick={() => setShowCamera(true)} disabled={!!video} className="camera-button bg-transparent border-0">
-                        <FaCamera className="icon" style={{ color: "blue" }} />
-                        <span>Camera</span>
+                    <button onClick={() => setShowCamera(true)} disabled={!!video} className="camera-button bg-transparent border-0 p-0">
+                        <div> <FaCamera className="icon mx-1" style={{ color: "blue" }} />  <span>Camera</span></div>
                     </button>
                 </>
             </div>}

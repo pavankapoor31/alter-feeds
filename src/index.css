@@ -11,6 +11,25 @@ body,html{
 *{
     font-family: "Kumbh Sans", sans-serif;
 }
+/* Default (desktop) */
+html {
+    font-size: 16px; /* 1rem = 16px */
+}
+
+/* Tablets */
+@media (max-width: 1024px) {
+    html {
+        font-size: 14px; /* 1rem = 14px */
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    html {
+        font-size: 12px; /* 1rem = 12px */
+    }
+}
+
 .custom-rounded-top{
     border-top-left-radius: 3.25rem;
     border-top-right-radius: 3.25rem;
