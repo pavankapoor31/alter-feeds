@@ -14,6 +14,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { AuthContext } from "../AppContext/AppContext";
 import { v4 } from 'uuid'
 import { toastConfig } from "../../config/config";
+import { useDispatch } from "react-redux";
 const CreatePost = () => {
     const camera = useRef(null);
     const [caption, setCaption] = useState("");
@@ -24,6 +25,7 @@ const CreatePost = () => {
     const [images, setImages] = useState([]);
     const navigate = useNavigate();
     const { user, userData } = useContext(AuthContext);
+    const dispatch = useDispatch();
     const sliderSettings = {
         dots: true,
         infinite: true,
@@ -37,6 +39,9 @@ const CreatePost = () => {
             const imageUrls = photos.map((file) => URL.createObjectURL(file));
             setImages(imageUrls);
         }
+        else{
+            setImages([])
+        }
     }, [photos]);
 
     const handlePhotoUpload = (e) => {
@@ -44,8 +49,15 @@ const CreatePost = () => {
             toast.error("Cannot upload photos with a video.", toastConfig);
             return;
         }
+        if (e.target.files){
+            console.log(e.target.files,'e.target.files')
+        }
         if (e.target.files) setPhotos((prev) => {
-            const newPhotos = [...prev, ...e.target.files];
+            let newPhotos = [];
+            if(prev)
+             newPhotos = [...prev, ...e.target.files];
+            else return [...e.target.files]
+            console.log(newPhotos,'newPhotos')
             return newPhotos
         });
     };
@@ -73,7 +85,8 @@ const CreatePost = () => {
     const createPost = async (postData) => {
         try {
             const newPost = await addDoc(postCollectionRef, postData);
-            return newPost.id;
+            const post = { id: newPost.id, ...postData }; // Combine ID with postData
+            return post;
         } catch (err) {
             console.error("Error posting the post:", err);
             throw err;
@@ -150,8 +163,8 @@ const CreatePost = () => {
                 likes: 0,
             };
             // Save post data to Firestore
-            const postId = await createPost(postData);
-
+            const post = await createPost(postData);
+            dispatch({ type: 'posts/addRealtimePost', payload: post })
             // Navigate to home or desired page
             toast.success("🎉 Posted successfully!", toastConfig)
             navigate(`/`);
@@ -171,7 +184,7 @@ const CreatePost = () => {
                 <h4>&larr; New post</h4>
             </div>
 
-            {photos.length > 0 && (
+            {photos.length > 1 ? (
                 <>
                     <div className="image-slider pb-4">
                         <Slider {...sliderSettings}>
@@ -196,7 +209,33 @@ const CreatePost = () => {
                         <span className="px-2">Add more photos</span>
                     </label>
                 </>
-            )}
+            ): <>
+                    {photos.length > 0 && <>
+
+                        <div className="image-slider pb-4 position-relative w-fit mx-auto" style={{ maxWidth: 'calc(100% - 20px)', maxHeight: '50vh' }}>
+                            {photos.map((photo, index) => (
+                                <div key={index} className="slide">
+                                    <img src={URL.createObjectURL(photo)} alt={`uploaded-${index}`} style={{ maxWidth: 'calc(100% - 20px)', maxHeight: '50vh',objectFit:"cover" }} />
+                                    <div style={{ position: "absolute", bottom: "1rem", "right": "2rem" }}>
+                                        <Button onClick={() => {
+                                            setPhotos(photos.filter((_, i) => i !== index));
+                                        }} className="bg-transparent text-danger border-0"
+                                            role="button">
+                                            <FaTrashAlt />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                    </div>
+                    <label>
+                        <FaImage className="icon" style={{ color: "green" }} />
+                        <input type="file" accept="image/*" multiple hidden onChange={handlePhotoUpload} disabled={!!video} />
+                        <span className="px-2">Add more photos</span>
+                    </label>
+                    </>}
+            </>
+        
+        }
 
             {/* Captured Image Preview */}
             {capturedImage && (
