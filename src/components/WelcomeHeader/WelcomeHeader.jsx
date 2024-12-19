@@ -1,10 +1,15 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 const WelcomeHeader = ({ username, image }) => {
+    const navigate = useNavigate();
+    const navigateToProfile = ()=>{
+        navigate('/profile')
+    }
     return (
         <Container className="py-3 px-0">
-            <div className="d-flex gap-2 align-items-center">
+            <div className="d-flex gap-2 align-items-center" role="button" onClick={navigateToProfile}>
                 <div className="">
                     <img
                         src={image}

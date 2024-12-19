@@ -1,15 +1,32 @@
+import { doc, getDoc, getDocs } from "firebase/firestore";
+import { db } from "/src/_auth/firebaseConfig.js";
 
-import { signInWithPopup } from "firebase/auth";
-import { auth,googleProvider } from "/src/_auth/firebaseConfig.js"
-export  const loginWithGoogle = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      const { uid, displayName, email, photoURL } = user;
-      const defaultUrl =   `https://api.dicebear.com/7.x/initials/svg?seed=${email}`;
-      const defaultProfilePic = photoURL || defaultUrl;
-      return user;
-    } catch (error) {
-      console.error("Google Login Error:", error.message);
+/**
+ * Fetches user details from the Firestore "users" collection by UID.
+ * @param {string} uid - The UID of the user.
+ * @returns {Promise<Object|null>} The user details if found, otherwise null.
+ */
+import { collection, query, where } from "firebase/firestore";
+
+export const fetchUserDetails = async (uid) => {
+    if (!uid) {
+        console.error("UID is required to fetch user details.");
+        return null;
     }
-  };
+
+    try {
+
+        const citiesRef = collection(db, "users");
+        const q = query(citiesRef, where("uid", "==", uid));
+        const querySnapshot = await getDocs(q);
+        let data=null
+        querySnapshot.forEach((doc) => {
+            if(doc.data())
+                data =  doc.data()
+          });
+        if(data) return data;       
+    } catch (error) {
+        console.error("Error fetching user details:", error);
+        return null; // Return null in case of an error
+    }
+};

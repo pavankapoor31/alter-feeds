@@ -50,3 +50,15 @@ body,html{
     margin: 0 auto;    /* Center the container horizontally */
     box-sizing: border-box;  /* Prevent padding/border from affecting the width */
   }
+  .mt-n1{
+    margin-top: -1rem;
+  }
+  .mt-1{
+    margin-top: 1rem;
+  }
+  .ml-1{
+    margin-left: 1rem;
+  }
+  .ml-2{
+    margin-left: 2rem;
+  }

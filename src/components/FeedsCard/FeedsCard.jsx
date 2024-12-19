@@ -6,10 +6,22 @@ import SharePost from "../SharePost/SharePost";
 import { FaTrashAlt } from "react-icons/fa";
 import "./FeedsCard.css"
 import { AuthContext } from "../AppContext/AppContext";
-const FeedCard = ({ creator, createdOn, caption, tags, files, likes, type, id, deletePost, likePost }) => {
+import { fetchUserDetails } from "../../api/api";
+const FeedCard = ({ creator, createdOn, caption, tags, files, likes, type, id, deletePost, likePost,allowDelete=true }) => {
     const { userData } = useContext(AuthContext);
     let bgColors = ["#F7EBFF", "#FFFAEE"]
     const [showSharePost, setShowSharePost] = useState(false);
+    const [creatorDetails, setCreatorDetails] = useState({name:"",image:"",id:""});
+    
+    useEffect( ()=>{
+        const getUserDetails = async ()=>{
+            let details = await fetchUserDetails(creator.id);
+            console.log(details,'details')
+            setCreatorDetails(details);
+        }
+        if(creator?.id)
+        getUserDetails();
+    },[creator])
     const videoRefs = useRef([]);
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -45,19 +57,19 @@ const FeedCard = ({ creator, createdOn, caption, tags, files, likes, type, id, d
                     <div className="d-flex align-items-center">
                         <div>
                             <Image
-                                src={creator.image || "https://via.placeholder.com/150"}
+                                src={creatorDetails.image || "https://via.placeholder.com/150"}
                                 roundedCircle
-                                alt={`${creator.name}'s profile picture`}
+                                alt={`${creatorDetails.name}'`}
                                 className="me-3"
                                 style={{ width: "3rem", height: "3rem", objectFit: "cover" }}
                             />
                         </div>
                         <div>
-                            <strong className="d-block">{creator.name}</strong>
+                            <strong className="d-block">{creatorDetails.name}</strong>
                             <small className="text-muted">{timeAgo(createdOn)}</small>
                         </div>
                     </div>
-                    {userData?.uid === creator?.id && <div className="delete-icon">
+                    {userData?.uid === creator?.id && allowDelete && <div className="delete-icon">
                         <FaTrashAlt
                             onClick={() => deletePost(id)}
                             className="text-danger cursor-pointer"
@@ -87,7 +99,7 @@ const FeedCard = ({ creator, createdOn, caption, tags, files, likes, type, id, d
                     </div>
                 </Card.Body>
                 <Card.Footer className="d-flex justify-content-between align-items-center bg-transparent">
-                    <div onClick={() => likePost(id, userData.uid)} role="button">
+                    <div onClick={() => {if(likePost)likePost(id, userData.uid)}} role="button">
                         <span>❤️ {likes?.length || 0}</span>
                     </div>
                     <ShareButton onClick={() => setShowSharePost(true)} />

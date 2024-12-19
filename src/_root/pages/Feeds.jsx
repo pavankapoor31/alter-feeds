@@ -77,16 +77,21 @@ const Feeds = () => {
     try {
       const postDoc = doc(db, "posts", id);
       const post = posts.find((post) => post.id === id);
-      const likes = post.likes.includes(userId)
-        ? post.likes.filter((id) => id !== userId)
-        : [...post.likes, userId];
-      await updateDoc(postDoc, {
-        likes,
-      });
+      
+      if (!post) {
+        console.error("Post not found");
+        return;
+      }
+
+      const currentLikes = post.likes || [];
+      const likes = currentLikes.includes(userId)
+        ? currentLikes.filter((likeId) => likeId !== userId)
+        : [...currentLikes, userId];
+
+      await updateDoc(postDoc, { likes });
+      
       setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === id ? { ...post, likes } : post
-        )
+        prevPosts.map((p) => (p.id === id ? { ...p, likes } : p))
       );
     } catch (err) {
       console.error("Error liking post:", err);
@@ -95,7 +100,7 @@ const Feeds = () => {
 
 
   return (
-    <Container>
+    <Container className="position-relative">
       <WelcomeHeader username={userData?.name} image={userData?.image} />
       <h4 className="mb-4 text-bold karla-font-800">Feeds</h4>
 

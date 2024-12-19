@@ -7,6 +7,7 @@ import ViewPost from '../components/ViewPost/ViewPost';
 import CreatePost from '../components/CreatePost/CreatePost';
 import { AuthContext } from '../components/AppContext/AppContext';
 import RootLayout from '../_root/RootLayout';
+import ProfilePage from '../_root/pages/ProfilePage';
 
 const AppRoutes = () => {
     const { user } = useContext(AuthContext);
@@ -38,6 +39,7 @@ const AppRoutes = () => {
                     <Route path="/home" element={<Home />} />
                     <Route path="/feeds/:id" element={<ViewPost />} />
                     <Route path="/create-post" element={<CreatePost />} />
+                    <Route path="/profile" element={<ProfilePage />} />
                 </Route>
             </Routes>
         </>
