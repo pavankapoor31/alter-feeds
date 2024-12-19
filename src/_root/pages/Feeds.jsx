@@ -1,112 +1,59 @@
-import React, { useContext, useState, useEffect } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
-import WelcomeHeader from "../../components/WelcomeHeader/WelcomeHeader";
-import FeedCard from "../../components/FeedsCard/FeedsCard";
-import FloatingButton from "../../components/FloatingButton/FloatingButton";
-import { Container, Spinner } from "react-bootstrap";
-import { AuthContext } from "../../components/AppContext/AppContext";
-import { useNavigate } from "react-router-dom";
-import { db } from "../../_auth/firebaseConfig";
-import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, doc, deleteDoc, arrayUnion, updateDoc } from "firebase/firestore";
-
+import React, { useContext, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import WelcomeHeader from '../../components/WelcomeHeader/WelcomeHeader';
+import FeedCard from '../../components/FeedsCard/FeedsCard';
+import FloatingButton from '../../components/FloatingButton/FloatingButton';
+import { Container, Spinner } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { fetchPosts, fetchMorePosts, deletePost, likePost } from '../../redux/slices/postsSlice';
+import { AuthContext } from '../../components/AppContext/AppContext';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { db } from '../../_auth/firebaseConfig';
 const Feeds = () => {
-  const { user, userData } = useContext(AuthContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [posts, setPosts] = useState([]);
-  const [lastDoc, setLastDoc] = useState(null);
-  const [hasMore, setHasMore] = useState(true);
+  const { items: posts, lastDoc, hasMore, status } = useSelector((state) => state.posts);
+  const {user,userData} = useContext(AuthContext)
+
+  const fetchMore = () => {
+    dispatch(fetchMorePosts(lastDoc));
+  };
 
   useEffect(() => {
-    // Initial fetch of posts
-    const postsCollectionRef = collection(db, "posts");
-    const postsQuery = query(postsCollectionRef, orderBy("createdOn", "desc"), limit(10));
-
-    const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
-      const fetchedPosts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setPosts(fetchedPosts);
-      if (snapshot.docs.length > 0) {
-        setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
-    } else {
-        setHasMore(false);
+    // Initial fetch if status is idle
+    if (status === 'idle') {
+      dispatch(fetchPosts());
     }
-      if (snapshot.docs.length < 10) {
-        setHasMore(false);
-      }
-    });
+    // Real-time listener for /posts collection
+    // const postsCollectionRef = collection(db, 'posts');
+    // const postsQuery = query(postsCollectionRef, orderBy('createdOn', 'desc'));
+    // const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
+    //   const changes = snapshot.docChanges();
+    //   changes.forEach((change) => {
+    //     const post = { id: change.doc.id, ...change.doc.data() };
 
-    return () => unsubscribe();
-  }, []);
+    //     if (change.type === 'added') {
+    //       // Add new post to the top of the feed
+    //       dispatch({ type: 'posts/addRealtimePost', payload: post });
+    //     } else if (change.type === 'removed') {
+    //       // Remove the deleted post
+    //       dispatch({ type: 'posts/removeRealtimePost', payload: post.id });
+    //     }
+    //   });
+    // });
 
-
-  const fetchMorePosts = async () => {
-    if (!lastDoc) return;
-
-    const postsCollectionRef = collection(db, "posts");
-    const postsQuery = query(
-      postsCollectionRef,
-      orderBy("createdOn", "desc"),
-      startAfter(lastDoc),
-      limit(10)
-    );
-
-    try {
-      const snapshot = await getDocs(postsQuery);
-      const newPosts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-
-      setPosts((prevPosts) => [...prevPosts, ...newPosts]);
-      setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
-      if (snapshot.docs.length < 10) {
-        setHasMore(false);
-      }
-      return;
-    } catch (err) {
-      console.error("Error fetching more posts:", err);
-    }
-  };
-
-  const deletePost = async (id) => {
-    try {
-      const postDoc = doc(db, "posts", id);
-      await deleteDoc(postDoc);
-      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
-    } catch (err) {
-      console.error("Error deleting post:", err);
-    }
-  };
-  const likePost = async (id, userId) => {
-    try {
-      const postDoc = doc(db, "posts", id);
-      const post = posts.find((post) => post.id === id);
-      
-      if (!post) {
-        console.error("Post not found");
-        return;
-      }
-
-      const currentLikes = post.likes || [];
-      const likes = currentLikes.includes(userId)
-        ? currentLikes.filter((likeId) => likeId !== userId)
-        : [...currentLikes, userId];
-
-      await updateDoc(postDoc, { likes });
-      
-      setPosts((prevPosts) =>
-        prevPosts.map((p) => (p.id === id ? { ...p, likes } : p))
-      );
-    } catch (err) {
-      console.error("Error liking post:", err);
-    }
-  };
-
+    // return () => unsubscribe(); // Cleanup listener on unmount
+  }, [dispatch, status]);
 
   return (
     <Container className="position-relative">
       <WelcomeHeader username={userData?.name} image={userData?.image} id={userData?.uid} />
       <h4 className="mb-2 text-bold karla-font-800">Feeds</h4>
       <InfiniteScroll
-        dataLength={posts.length} // Current number of posts
-        next={fetchMorePosts}     // Function to load more data
-        hasMore={hasMore}         // Determines whether more data can be loaded
+        dataLength={posts.length}
+        next={fetchMore}
+        hasMore={hasMore}
         loader={
           <div className="text-center my-3">
             <Spinner animation="border" variant="primary" />
@@ -120,7 +67,12 @@ const Feeds = () => {
         }
       >
         {posts.map((post) => (
-          <FeedCard key={post.id} {...post} deletePost={deletePost} likePost={likePost}/>
+          <FeedCard
+            key={post.id}
+            {...post}
+            deletePost={(id) => dispatch(deletePost(id))}
+            likePost={(id, userId) => dispatch(likePost({ id, userId }))}
+          />
         ))}
       </InfiniteScroll>
       <FloatingButton onClick={() => navigate('/create-post')} />

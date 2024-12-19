@@ -149,8 +149,8 @@ const ProfilePage = ({userData}) => {
                                     alt="Profile Pic"
                                     className="rounded-circle"
                                     style={{
-                                        maxWidth: '7rem',
-                                        maxHeight: '7rem',
+                                        width: '7.1rem',
+                                        height: '7rem',
                                         position: 'relative',
                                         top: '-3.25rem',
                                         left: '1rem',
@@ -205,12 +205,12 @@ const ProfilePage = ({userData}) => {
                             src={userData?.image}
                             alt="Profile Pic"
                             className="rounded-circle border border-gray "
-                            style={{ maxWidth: '7rem', maxHeight: '7rem', position: 'relative', top: '-3.25rem' }}
+                            style={{ width: '7.1rem', height: '7rem', position: 'relative', top: '-3.5rem' }}
                         />
                            
                          <label>
                         <input type="file" accept="image/*" multiple hidden onChange={handlePhotoUpload}  />
-                        <FaPencilAlt  style={{  position: 'relative', top: '-3rem','left':'0rem' }} onClick={handlePhotoUpload}/>  
+                        <FaPencilAlt  className='text-white fs-5 ' style={{  position: 'relative', top: '-3rem','left':'-1.25rem' }} onClick={handlePhotoUpload}/>  
                          </label>
 
                     </div>
