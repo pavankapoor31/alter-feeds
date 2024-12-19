@@ -10,46 +10,92 @@ import {
     FaInstagram,
     FaCopy,
 } from "react-icons/fa";
-
-const SharePost = ({isShareOpen, setIsShareOpen,postId}) => {
+import { toastConfig } from "../../config/config";
+import { toast } from "react-toastify";
+import closeIcon from "./../../assets/images/close_icon.svg"
+const SharePost = ({ isShareOpen, setIsShareOpen, postId }) => {
     const [copied, setCopied] = useState(false);
     const [shareLink, setShareLink] = useState("");
 
-    useEffect(()=>{
-        if(postId){
-            setShareLink(postId?window.location.origin+"/feeds/"+postId:"")
+    useEffect(() => {
+        if (postId) {
+            let link = postId ? window.location.origin + "/feeds/" + postId : ""
+            setShareLink(link);
+            navigator.clipboard.writeText(link);
         }
-    },[postId])
+    }, [postId])
 
+    useEffect(() => {
+        if (!shareLink) return;
+        navigator.clipboard.writeText(shareLink);
+        toast.success("Link copied to clipboard", toastConfig)
+    }, [shareLink])
     const handleCopy = () => {
         navigator.clipboard.writeText(shareLink);
         setCopied(true);
+        toast.success("Link copied to clipboard", toastConfig)
         setTimeout(() => setCopied(false), 2000); // Reset the copied state after 2 seconds
     };
 
     const togglePopup = () => {
-        setIsShareOpen((prev)=>!prev);
+        setIsShareOpen((prev) => !prev);
     };
-
-    const socialMediaLinks = [
-        { name: "Twitter", icon: <FaTwitter />, link: "https://twitter.com" },
-        { name: "Facebook", icon: <FaFacebook />, link: "https://facebook.com" },
-        { name: "Reddit", icon: <FaReddit />, link: "https://reddit.com" },
-        { name: "Discord", icon: <FaDiscord />, link: "https://discord.com" },
-        { name: "WhatsApp", icon: <FaWhatsapp />, link: "https://whatsapp.com" },
-        { name: "Messenger", icon: <FaFacebookMessenger />, link: "https://messenger.com" },
-        { name: "Telegram", icon: <FaTelegram />, link: "https://telegram.org" },
-        { name: "Instagram", icon: <FaInstagram />, link: "https://instagram.com" },
+    
+    const socialMediaLinks = (postUrl, postText) => [
+        {
+            name: "Twitter",
+            icon: <FaTwitter />,
+            link: `https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(postText)}`,
+        },
+        {
+            name: "Facebook",
+            icon: <FaFacebook />,
+            link: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`,
+        },
+        {
+            name: "Reddit",
+            icon: <FaReddit />,
+            link: `https://reddit.com/submit?url=${encodeURIComponent(postUrl)}&title=${encodeURIComponent(postText)}`,
+        },
+        {
+            name: "Discord",
+            icon: <FaDiscord />,
+            link: `https://discord.com/`, // Discord does not have a direct sharing URL
+        },
+        {
+            name: "WhatsApp",
+            icon: <FaWhatsapp />,
+            link: `https://wa.me/?text=${encodeURIComponent(postText)}%20${encodeURIComponent(postUrl)}`,
+        },
+        {
+            name: "Messenger",
+            icon: <FaFacebookMessenger />,
+            link: `https://www.facebook.com/dialog/send?link=${encodeURIComponent(postUrl)}&app_id=YOUR_APP_ID`,
+        },
+        {
+            name: "Telegram",
+            icon: <FaTelegram />,
+            link: `https://t.me/share/url?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(postText)}`,
+        },
+        {
+            name: "Instagram",
+            icon: <FaInstagram />,
+            link: `https://www.instagram.com/`, // Instagram does not have a direct sharing URL
+        },
     ];
+    
 
     return (
         <div>
             {isShareOpen && (
                 <div style={styles.modalOverlay}>
                     <div style={styles.modalContent}>
-                        <h4 style={styles.header}>Share post</h4>
+                        <div className="d-flex justify-content-between">
+                            <div style={styles.header}>Share post</div> 
+                            <div onClick={togglePopup}> <img src={closeIcon}/></div>
+                        </div>
                         <div style={styles.iconsContainer}>
-                            {socialMediaLinks.map((platform, index) => (
+                            {socialMediaLinks(shareLink,"Check out this post!").map((platform, index) => (
                                 <a
                                     key={index}
                                     href={platform.link}
@@ -63,15 +109,13 @@ const SharePost = ({isShareOpen, setIsShareOpen,postId}) => {
                             ))}
                         </div>
 
+                        <div className="font-bold">Page link</div>
                         <div style={styles.pageLinkContainer}>
                             <span style={styles.pageLink}>{shareLink}</span>
-                            <button style={styles.copyButton} onClick={handleCopy}>
-                                <FaCopy /> {copied ? "Copied!" : "Copy"}
+                            <button className="btn btn-light" onClick={handleCopy}>
+                                <FaCopy />
                             </button>
                         </div>
-                        <button style={styles.closeButton} onClick={togglePopup}>
-                            Close
-                        </button>
                     </div>
                 </div>
             )}
@@ -116,9 +160,8 @@ const styles = {
         marginBottom: "15px",
     },
     iconsContainer: {
-        display: "flex",
-        justifyContent: "center",
-        flexWrap: "wrap",
+        display: "grid",
+        gridTemplateColumns: "repeat(4, 1fr)", /* 4 columns */
         gap: "15px",
         marginBottom: "20px",
     },

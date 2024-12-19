@@ -41,6 +41,7 @@ const AppRoutes = () => {
                     <Route path="/feeds/:id" element={<ViewPost />} />
                     <Route path="/create-post" element={<CreatePost />} />
                     <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/profile/:id" element={<ProfilePage />} />
                 </Route>
             </Routes>
             <ToastContainer

@@ -79,7 +79,7 @@ const FeedCard = ({ creator, createdOn, caption, tags, files, likes, type, id, d
                     </div>}
                 </Card.Header>
                 <Card.Body>
-                    <Card.Text>{caption}</Card.Text>
+                    <Card.Text className="card-text">{caption}</Card.Text>
                     <div className="mb-2">
                         {tags?.map((tag, index) => (
                             <span key={index} className="text-primary me-2">

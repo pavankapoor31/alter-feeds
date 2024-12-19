@@ -86,6 +86,17 @@ const CreatePost = () => {
             return;
         }
 
+        if(caption.length > 2000){
+            console.log(caption.length,'caption')
+            toast.error("Max 2000 characters allowed!.", toastConfig);
+            return;
+        }
+        if(images.length === 0 && !video && !capturedImage &&caption?.trim().length===0 ){
+            toast.error("Please add content to post", toastConfig);
+            return;
+        }
+
+        
         try {
             const files = [];
             const fileURLs = [];

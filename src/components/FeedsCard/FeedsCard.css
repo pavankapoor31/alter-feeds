@@ -13,3 +13,6 @@
     opacity: 1;
     visibility: visible;
 }
+.card-text{
+    min-height: 8rem;
+}
