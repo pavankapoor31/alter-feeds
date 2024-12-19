@@ -7,7 +7,9 @@ import defaultCoverImage from './../../assets/images/cover_image.svg';
 import { Button } from 'react-bootstrap';
 import FeedCard from '../../components/FeedsCard/FeedsCard';
 import leftArrowSvg from "./../../assets/images/left_arrow.svg";
-
+import { FaPencilAlt } from 'react-icons/fa';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { storage } from '../../_auth/firebaseConfig';
 const ProfilePage = ({userData}) => {
     const { user } = useContext(AuthContext);
     const [posts, setPosts] = useState([]);
@@ -90,6 +92,42 @@ const ProfilePage = ({userData}) => {
         }
     }, [user, navigate]);
 
+    const handlePhotoUpload = async (e) => {
+        if (!user) {
+            setError('User not authenticated');
+            return;
+        }
+
+        const file = e.target.files[0];
+        const storageRef = ref(storage, `users/${user.uid}/profile_image`);
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(storageRef);
+            const usersRef = collection(db, 'users');
+            const q = query(usersRef, where('uid', '==', user.uid));
+            const querySnapshot = await getDocs(q);
+            if (querySnapshot.empty) {
+                throw new Error('User profile not found');
+            }
+            const userDoc = querySnapshot.docs[0];
+            const docId = userDoc.id;
+            const updateData = {
+                image: downloadURL,
+                updatedAt: new Date().toISOString()
+            };
+            const userDocRef = doc(db, 'users', docId);
+            await updateDoc(userDocRef, updateData);
+            setError(null);
+        } catch (err) {
+            console.error('Error updating profile image:', err);
+            setError(err.message || 'Failed to update profile image');
+        } finally {
+            setIsLoading(false);
+        }
+    };
     return (
         <div className="profile-page position-relative" style={{ height: "calc(100vh)" }}>
             {!editingProfile ? (
@@ -102,7 +140,7 @@ const ProfilePage = ({userData}) => {
                                 className="profile-image"
                                 style={{ objectFit: 'cover', width: '100%', height: '11.85rem' }}
                             />
-                            <img src={leftArrowSvg} className='position-absolute start-0 fs-3 text-white ml-1 mt-1' onClick={() => navigate(-1)} />
+                            <img src={leftArrowSvg} className='position-absolute start-0 fs-3 text-white ml-1 mt-1' role='button' onClick={() => navigate(-1)} />
                         </div>
                         <div className="d-flex gap-2">
                             <div>
@@ -169,7 +207,12 @@ const ProfilePage = ({userData}) => {
                             className="rounded-circle border border-gray "
                             style={{ maxWidth: '7rem', maxHeight: '7rem', position: 'relative', top: '-3.25rem' }}
                         />
-                        {/* Optional: Add functionality to change profile picture */}
+                           
+                         <label>
+                        <input type="file" accept="image/*" multiple hidden onChange={handlePhotoUpload}  />
+                        <FaPencilAlt  style={{  position: 'relative', top: '-3rem','left':'0rem' }} onClick={handlePhotoUpload}/>  
+                         </label>
+
                     </div>
                     <div className="form-group ml-1">
                         <label>Name</label>
