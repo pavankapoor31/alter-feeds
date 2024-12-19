@@ -101,7 +101,7 @@ const Feeds = () => {
 
   return (
     <Container className="position-relative">
-      <WelcomeHeader username={userData?.name} image={userData?.image} id={userData.uid} />
+      <WelcomeHeader username={userData?.name} image={userData?.image} id={userData?.uid} />
       <h4 className="mb-2 text-bold karla-font-800">Feeds</h4>
       <InfiniteScroll
         dataLength={posts.length} // Current number of posts
