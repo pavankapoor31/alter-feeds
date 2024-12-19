@@ -9,6 +9,7 @@ import { AuthContext } from '../components/AppContext/AppContext';
 import RootLayout from '../_root/RootLayout';
 import ProfilePage from '../_root/pages/ProfilePage';
 import { ToastContainer } from 'react-toastify';
+import ProfileWrapper from '../_root/wrappers/ProfileWrapper';
 
 const AppRoutes = () => {
     const { user } = useContext(AuthContext);
@@ -40,8 +41,7 @@ const AppRoutes = () => {
                     <Route path="/home" element={<Home />} />
                     <Route path="/feeds/:id" element={<ViewPost />} />
                     <Route path="/create-post" element={<CreatePost />} />
-                    <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/profile/:id" element={<ProfilePage />} />
+                    <Route path="/profile/:id" element={<ProfileWrapper />} />
                 </Route>
             </Routes>
             <ToastContainer

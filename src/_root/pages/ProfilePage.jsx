@@ -1,15 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../components/AppContext/AppContext';
 import { db } from '../../_auth/firebaseConfig';
-import { collection, query, where, getDocs, doc, updateDoc,getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import defaultCoverImage from './../../assets/images/cover_image.svg';
 import { Button } from 'react-bootstrap';
 import FeedCard from '../../components/FeedsCard/FeedsCard';
 import leftArrowSvg from "./../../assets/images/left_arrow.svg";
 
-const ProfilePage = () => {
-    const { user, userData } = useContext(AuthContext);
+const ProfilePage = ({userData}) => {
+    const { user } = useContext(AuthContext);
     const [posts, setPosts] = useState([]);
     const [editingProfile, setEditingProfile] = useState(false);
     const [updatedName, setUpdatedName] = useState(userData?.name || '');
@@ -73,9 +73,9 @@ const ProfilePage = () => {
         }
     };
     const getUserPosts = async () => {
-        if (user) {
+        if (userData) {
             const postsRef = collection(db, 'posts');
-            const q = query(postsRef, where('creator.id', '==', user.uid));
+            const q = query(postsRef, where('creator.id', '==', userData.uid));
             const querySnapshot = await getDocs(q);
             const postsData = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
             setPosts(postsData);
@@ -91,7 +91,7 @@ const ProfilePage = () => {
     }, [user, navigate]);
 
     return (
-        <div className="profile-page position-relative" style={{height:"calc(100vh)"}}>
+        <div className="profile-page position-relative" style={{ height: "calc(100vh)" }}>
             {!editingProfile ? (
                 <>
                     <div className="profile-info">
@@ -102,7 +102,7 @@ const ProfilePage = () => {
                                 className="profile-image"
                                 style={{ objectFit: 'cover', width: '100%', height: '11.85rem' }}
                             />
-                            <img src={leftArrowSvg} className='position-absolute start-0 fs-3 text-white ml-1 mt-1' onClick={()=>navigate(-1)}/>
+                            <img src={leftArrowSvg} className='position-absolute start-0 fs-3 text-white ml-1 mt-1' onClick={() => navigate(-1)} />
                         </div>
                         <div className="d-flex gap-2">
                             <div>
@@ -137,11 +137,11 @@ const ProfilePage = () => {
                         </div>
                     </div>
                     <div className="posts mt-1">
-                        <h3 className="ml-1">My Posts</h3>
+                        <h3 className="ml-1">{`${userData.uid===user.uid?'Your ':''}`} Posts</h3>
                         {posts.length > 0 ? (
                             <div className="mt-1">
                                 {posts.map((post) => (
-                                    <FeedCard key={post.id} {...post} allowDelete={false} likePost={() => {}} />
+                                    <FeedCard key={post.id} {...post} allowDelete={false} likePost={() => { }} />
                                 ))}
                             </div>
                         ) : (
@@ -158,7 +158,7 @@ const ProfilePage = () => {
                             className="profile-image"
                             style={{ objectFit: 'cover', width: '100%', height: '11.85rem' }}
                         />
-                    <img src ={leftArrowSvg} className='position-absolute start-0 fs-3 text-white ml-1 mt-1' onClick={()=>setEditingProfile(false)}/>
+                        <img src={leftArrowSvg} className='position-absolute start-0 fs-3 text-white ml-1 mt-1' onClick={() => setEditingProfile(false)} />
                     </div>
                     <div className="profile-pic-edit ml-1">
                         <img
@@ -186,7 +186,9 @@ const ProfilePage = () => {
                             onChange={(e) => setUpdatedBio(e.target.value)}
                         />
                     </div>
-                    <Button variant="dark" className='position-absolute bottom-0 w-100 rounded-5  mx-4' onClick={handleSaveProfile}>
+                    <Button variant="dark" className='position-absolute w-75  rounded-5' onClick={handleSaveProfile}
+                    style={{left:"1rem",right:"1rem",bottom:"1rem",margin:'auto'}}
+                    >
                         Save
                     </Button>
                 </div>

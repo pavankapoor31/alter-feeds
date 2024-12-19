@@ -7,12 +7,13 @@ import { FaHeart, FaTrashAlt } from "react-icons/fa";
 import "./FeedsCard.css"
 import { AuthContext } from "../AppContext/AppContext";
 import { fetchUserDetails } from "../../api/api";
+import { useNavigate } from "react-router-dom";
 const FeedCard = ({ creator, createdOn, caption, tags, files, likes, type, id, deletePost, likePost,allowDelete=true }) => {
     const { userData } = useContext(AuthContext);
     let bgColors = ["#F7EBFF", "#FFFAEE"]
     const [showSharePost, setShowSharePost] = useState(false);
     const [creatorDetails, setCreatorDetails] = useState({name:"",image:"",id:""});
-    
+    const navigate = useNavigate();
     useEffect( ()=>{
         const getUserDetails = async ()=>{
             let details = await fetchUserDetails(creator.id);
@@ -54,7 +55,7 @@ const FeedCard = ({ creator, createdOn, caption, tags, files, likes, type, id, d
             {showSharePost && <SharePost isShareOpen={showSharePost} setIsShareOpen={setShowSharePost} postId={id} />}
             <Card className="mb-3 border-0 border-radius-2 hover-card" style={{ background: bgColors[Math.floor(Math.random() * bgColors.length)] }}>
                 <Card.Header className="bg-transparent d-flex justify-content-between align-items-center border-0">
-                    <div className="d-flex align-items-center">
+                    <div className="d-flex align-items-center" role="button" onClick={()=>navigate(`/profile/${creator.id}`)}>
                         <div>
                             <Image
                                 src={creatorDetails.image || "https://via.placeholder.com/150"}

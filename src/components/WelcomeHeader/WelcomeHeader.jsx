@@ -2,10 +2,10 @@ import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-const WelcomeHeader = ({ username, image }) => {
+const WelcomeHeader = ({ username, image,id }) => {
     const navigate = useNavigate();
     const navigateToProfile = ()=>{
-        navigate('/profile')
+        navigate('/profile/'+id)
     }
     return (
         <Container className="py-3 px-0">
