@@ -119,13 +119,15 @@ const ProfilePage = ({userData}) => {
                                     }}
                                 />
                             </div>
-                            <div
+                            {user?.uid === userData?.uid &&
+                                <div
                                 className="btn h-fit btn-sm btn-outline-dark px-5 mx-3 bg-white border-radius-2 text-black w-100"
                                 style={{ height: 'fit-content', marginTop: '1rem' }}
                                 onClick={toggleEditProfile}
                             >
                                 Edit Profile
                             </div>
+                            }
                         </div>
                         <div className="karla-font-600 fs-1 mt-n1 ml-1">{userData?.name}</div>
                         <div className="ml-1">
