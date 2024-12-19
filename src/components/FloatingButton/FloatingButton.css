@@ -1,8 +1,18 @@
 .floating-button {
-  width: "60px";
-  height: "60px";
-  font-size: "2rem";
-  bottom: "2px";
-  right: "0px";
-  z-index: 2;
+  position: fixed;
+  bottom: 20px; /* Distance from the bottom of the viewport */
+  right: 20px; /* Distance from the right of the viewport */
+  z-index: 999; /* Ensure it's above other content */
+  cursor: pointer;
+}
+
+@media (min-width: 1200px) {
+  .floating-button {
+    position: fixed;
+    bottom: 20px; /* Distance from the bottom of the viewport */
+    right: 0;
+    left: calc(50%); /* Distance from the right of the viewport */
+    z-index: 999; /* Ensure it's above other content */
+    cursor: pointer;
+  }
 }

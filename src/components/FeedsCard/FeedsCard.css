@@ -13,6 +13,9 @@
     opacity: 1;
     visibility: visible;
 }
-.card-text{
-    min-height: 8rem;
+.card-content{
+    min-height:11rem;
+}
+.heard-red{
+    color: #D95B7F;
 }

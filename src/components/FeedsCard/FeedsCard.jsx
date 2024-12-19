@@ -3,7 +3,7 @@ import { Card, Button, Row, Col, Image } from "react-bootstrap";
 import { timeAgo } from "../../utilities/utilityFunctions";
 import ShareButton from "../ShareButton/ShareButton";
 import SharePost from "../SharePost/SharePost";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaHeart, FaTrashAlt } from "react-icons/fa";
 import "./FeedsCard.css"
 import { AuthContext } from "../AppContext/AppContext";
 import { fetchUserDetails } from "../../api/api";
@@ -53,7 +53,7 @@ const FeedCard = ({ creator, createdOn, caption, tags, files, likes, type, id, d
         <>
             {showSharePost && <SharePost isShareOpen={showSharePost} setIsShareOpen={setShowSharePost} postId={id} />}
             <Card className="mb-3 border-0 border-radius-2 hover-card" style={{ background: bgColors[Math.floor(Math.random() * bgColors.length)] }}>
-                <Card.Header className="bg-transparent d-flex justify-content-between align-items-center">
+                <Card.Header className="bg-transparent d-flex justify-content-between align-items-center border-0">
                     <div className="d-flex align-items-center">
                         <div>
                             <Image
@@ -78,8 +78,8 @@ const FeedCard = ({ creator, createdOn, caption, tags, files, likes, type, id, d
                         />
                     </div>}
                 </Card.Header>
-                <Card.Body>
-                    <Card.Text className="card-text">{caption}</Card.Text>
+                <Card.Body className="border-0 card-content">
+                    <Card.Text className="border-0">{caption}</Card.Text>
                     <div className="mb-2">
                         {tags?.map((tag, index) => (
                             <span key={index} className="text-primary me-2">
@@ -91,16 +91,16 @@ const FeedCard = ({ creator, createdOn, caption, tags, files, likes, type, id, d
                         {files?.map((img, idx) => (
                             <div className="mb-2">
                                 {
-                                    type === "image" ? <Image src={img} thumbnail className="border-radius-1" />
+                                    type === "image" ? <Image src={img} thumbnail className="border-radius-1" style={{width:"12rem"}} />
                                         : <video className="w-100" ref={(el) => (videoRefs.current[idx] = el)} src={img} controls muted />
                                 }
                             </div>
                         ))}
                     </div>
                 </Card.Body>
-                <Card.Footer className="d-flex justify-content-between align-items-center bg-transparent">
+                <Card.Footer className="d-flex justify-content-between align-items-center bg-transparent border-0">
                     <div onClick={() => {if(likePost)likePost(id, userData.uid)}} role="button">
-                        <span>❤️ {likes?.length || 0}</span>
+                        <span className="heard-red"> <FaHeart/> <span className="px-1 d-inline-block">{likes?.length || 0}</span></span>
                     </div>
                     <ShareButton onClick={() => setShowSharePost(true)} />
                 </Card.Footer>

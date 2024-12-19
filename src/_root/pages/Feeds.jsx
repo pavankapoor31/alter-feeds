@@ -102,9 +102,7 @@ const Feeds = () => {
   return (
     <Container className="position-relative">
       <WelcomeHeader username={userData?.name} image={userData?.image} />
-      <h4 className="mb-4 text-bold karla-font-800">Feeds</h4>
-
-      <FloatingButton onClick={() => navigate('/create-post')} />
+      <h4 className="mb-2 text-bold karla-font-800">Feeds</h4>
       <InfiniteScroll
         dataLength={posts.length} // Current number of posts
         next={fetchMorePosts}     // Function to load more data
@@ -125,6 +123,7 @@ const Feeds = () => {
           <FeedCard key={post.id} {...post} deletePost={deletePost} likePost={likePost}/>
         ))}
       </InfiniteScroll>
+      <FloatingButton onClick={() => navigate('/create-post')} />
     </Container>
   );
 };
