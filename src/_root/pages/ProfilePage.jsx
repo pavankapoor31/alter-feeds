@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import defaultCoverImage from './../../assets/images/cover_image.svg';
 import { Button } from 'react-bootstrap';
 import FeedCard from '../../components/FeedsCard/FeedsCard';
+import leftArrowSvg from "./../../assets/images/left_arrow.svg";
 
 const ProfilePage = () => {
     const { user, userData } = useContext(AuthContext);
@@ -101,6 +102,7 @@ const ProfilePage = () => {
                                 className="profile-image"
                                 style={{ objectFit: 'cover', width: '100%', height: '11.85rem' }}
                             />
+                            <img src={leftArrowSvg} className='position-absolute start-0 fs-3 text-white ml-1 mt-1' onClick={()=>navigate(-1)}/>
                         </div>
                         <div className="d-flex gap-2">
                             <div>
@@ -156,6 +158,7 @@ const ProfilePage = () => {
                             className="profile-image"
                             style={{ objectFit: 'cover', width: '100%', height: '11.85rem' }}
                         />
+                    <img src ={leftArrowSvg} className='position-absolute start-0 fs-3 text-white ml-1 mt-1' onClick={()=>setEditingProfile(false)}/>
                     </div>
                     <div className="profile-pic-edit ml-1">
                         <img
@@ -183,7 +186,7 @@ const ProfilePage = () => {
                             onChange={(e) => setUpdatedBio(e.target.value)}
                         />
                     </div>
-                    <Button variant="dark" className='position-absolute bottom-0 w-100 border-radius-1 mx-4' onClick={handleSaveProfile}>
+                    <Button variant="dark" className='position-absolute bottom-0 w-100 rounded-5  mx-4' onClick={handleSaveProfile}>
                         Save
                     </Button>
                 </div>
